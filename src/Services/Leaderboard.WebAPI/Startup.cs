@@ -212,7 +212,15 @@ namespace Leaderboard.WebAPI
             app.UseOpenApi();
             app.UseSwaggerUi3();
 
-            app.UseMvcWithDefaultRoute();
+            app.UseEndpoints(endpoints =>
+            {
+
+                //endpoints.MapDefaultControllerRoute(); // default behavior
+
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+            });
         }
     }
 }

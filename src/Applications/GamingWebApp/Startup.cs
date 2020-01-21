@@ -108,8 +108,15 @@ namespace GamingWebApp
 
             app.UseStaticFiles();
             app.UseCookiePolicy();
+            app.UseEndpoints(endpoints =>
+            {
 
-            app.UseMvc();
+                //endpoints.MapDefaultControllerRoute(); // default behavior
+
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+            });
         }
     }
 }
