@@ -37,7 +37,8 @@ namespace Leaderboard.WebAPI.Controllers
         [ProducesResponseType(typeof(IEnumerable<HighScore>), 200)]
         public async Task<ActionResult<IEnumerable<HighScore>>> Get(int limit = 0)
         {
-            var scores = from score in context.Scores
+            var localScores = await context.Scores.Include("Gamer").ToArrayAsync();
+            var scores = from score in localScores
                          group new { score.Gamer.Nickname, score.Points } by score.Game into scoresPerGame
                          select new HighScore()
                          {
@@ -45,7 +46,7 @@ namespace Leaderboard.WebAPI.Controllers
                              Points = scoresPerGame.Max(e => e.Points),
                              Nickname = scoresPerGame.OrderByDescending(s => s.Points).First().Nickname
                          };
-            return Ok(await scores.OrderBy(s => s.Points).ToListAsync());
+            return Ok(scores.OrderBy(s => s.Points));
         }
     }
 }

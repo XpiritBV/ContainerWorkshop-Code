@@ -85,9 +85,9 @@ namespace Leaderboard.WebAPI
             ConfigureHealth(services);
             ConfigureSerialization();
 
-            services.AddMvc()
-                .AddXmlSerializerFormatters()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+            services.AddMvc(options => options.EnableEndpointRouting = false)
+                .AddXmlSerializerFormatters();
+                //.SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
         }
 
         private void ConfigureFeatures(IServiceCollection services)
@@ -193,34 +193,19 @@ namespace Leaderboard.WebAPI
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env,
             ILoggerFactory loggerFactory, LeaderboardContext context)
         {
-            //loggerFactory.AddApplicationInsights(app.ApplicationServices, LogLevel.Information);
-            //loggerFactory.AddAzureWebAppDiagnostics(
-            //    new AzureAppServicesDiagnosticsSettings
-            //    {
-            //        OutputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss zzz} [{Level}] {RequestId}-{SourceContext}: {Message}{NewLine}{Exception}"
-            //    }
-            //);
-       
+
             LoggerFactory.Create(builder => builder.AddConsole());
             LoggerFactory.Create(builder => builder.AddDebug());
             if (env.EnvironmentName == Microsoft.Extensions.Hosting.Environments.Development)
             {
+                
                 DbInitializer.Initialize(context).Wait();
                 app.UseDeveloperExceptionPage();
             }
 
             app.UseOpenApi();
             app.UseSwaggerUi3();
-
-            app.UseEndpoints(endpoints =>
-            {
-
-                //endpoints.MapDefaultControllerRoute(); // default behavior
-
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
-            });
+            app.UseMvc();
         }
     }
 }
