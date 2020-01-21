@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Hosting;
 using Polly;
 using Refit;
 
@@ -50,13 +51,13 @@ namespace GamingWebApp
             ConfigureSecurity(services);
             ConfigureTelemetry(services);
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
         }
 
         private void ConfigureTelemetry(IServiceCollection services)
         {
             services.AddSingleton<ITelemetryInitializer, ServiceNameInitializer>();
-            var env = services.BuildServiceProvider().GetRequiredService<IHostingEnvironment>();
+            var env = services.BuildServiceProvider().GetRequiredService<IWebHostEnvironment>();
             services.AddApplicationInsightsTelemetry(options =>
             {
                 options.DeveloperMode = env.IsDevelopment();
@@ -89,13 +90,12 @@ namespace GamingWebApp
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(ILoggerFactory loggerFactory, IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(ILoggerFactory loggerFactory, IApplicationBuilder app, IWebHostEnvironment env)
         {
-            loggerFactory.AddApplicationInsights(app.ApplicationServices, LogLevel.Information);
-            loggerFactory.AddConsole();
-            loggerFactory.AddDebug();
+            LoggerFactory.Create(builder => builder.AddConsole());
+            LoggerFactory.Create(builder => builder.AddDebug());
 
-            if (env.IsDevelopment())
+            if (env.EnvironmentName == Microsoft.Extensions.Hosting.Environments.Development)
             {
                 app.UseDeveloperExceptionPage();
             }

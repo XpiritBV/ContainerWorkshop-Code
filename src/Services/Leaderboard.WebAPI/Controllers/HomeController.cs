@@ -7,7 +7,7 @@ using NSwag.Annotations;
 
 namespace Leaderboard.WebAPI.Controllers
 {
-    [SwaggerIgnore]
+    [OpenApiIgnoreAttribute]
     public class HomeController : Controller
     {        
         public IActionResult Index()
