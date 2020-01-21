@@ -8,7 +8,8 @@ Goals for this lab:
 - [Working with container images](#working)
 
 ## <a name="inspect"></a>Inspect your Docker environment
-Let's check whether your Docker Desktop Community Edition tooling is correctly set up. Also, you might need to get familiar with the Docker tooling.
+Let's check whether your Docker Desktop Community Edition tooling is correctly set up. 
+Also, you might need to get familiar with the Docker tooling.
 
 You should see the Docker tooling running. On Windows, you can check this by looking for a tray icon like this:
 
@@ -17,12 +18,16 @@ You should see the Docker tooling running. On Windows, you can check this by loo
 If you cannot find the Docker icon in the tray, you might need to start the Docker tooling:
 
 ```cmd
-C:\Program Files\Docker\Docker\Docker for Windows.exe
+C:\Program Files\Docker\Docker\Docker Desktop.exe
 ```
 
 After starting the Docker tooling you should see the following dialog:
 
-<img src="images/dockerrunning.png" height="500"/>
+<img src="images/docker desktop running.png" height="100"/>
+
+When you click the whale icon in the system tray and select: about docker desktop, you should see the following window:
+
+<img src="images/docker desktop.png" height="300">
 
 Start a Developer Command Prompt and run the following commands:
 
@@ -36,32 +41,30 @@ Verify that your installation functions correctly. You should get see the curren
 
 Tooling version:
 ```
-Docker version 18.09.2, build 6247962
+Docker version 19.03.5, build 6247962
 ```
 
 Client and server information:
 ```
 Client: Docker Engine - Community
- Version:           18.09.2
- API version:       1.39
- Go version:        go1.10.8
- Git commit:        6247962
- Built:             Sun Feb 10 04:12:31 2019
+ Version:           19.03.5
+ API version:       1.40
+ Go version:        go1.12.12
+ Git commit:        633a0ea
+ Built:             Wed Nov 13 07:22:37 2019
  OS/Arch:           windows/amd64
  Experimental:      false
 
 Server: Docker Engine - Community
  Engine:
-  Version:          18.09.2
-  API version:      1.39 (minimum version 1.12)
-  Go version:       go1.10.6
-  Git commit:       6247962
-  Built:            Sun Feb 10 04:13:06 2019
-  OS/Arch:          linux/amd64
+  Version:          19.03.5
+  API version:      1.40 (minimum version 1.24)
+  Go version:       go1.12.12
+  Git commit:       633a0ea
+  Built:            Wed Nov 13 07:36:50 2019
+  OS/Arch:          windows/amd64
   Experimental:     false
- Kubernetes:
-  Version:          v1.10.11
-  StackAPI:         v1beta2
+
 ```
 
 If the Engine does not report `OS/Arch` as `linux/amd64` but `windows/amd64` instead, it means that you are running Windows containers at the moment. Run the following command to switch to Linux:
@@ -70,22 +73,38 @@ If the Engine does not report `OS/Arch` as `linux/amd64` but `windows/amd64` ins
 ```
 
 ## <a name="manage"></a>Managing container instances
-Let's see whether you can start some container instances. The categorical sample is "Hello World". Start a container that should run if everything is configured correctly. From a command prompt, run the following command:
+Let's see whether you can start some container instances. The cannonical sample is "Hello World". Start a container that should run if everything is configured correctly. From a command prompt, run the following command:
 ```
 docker run hello-world
 ```
 This should output a message that starts with the following:
 ```
+Unable to find image 'hello-world:latest' locally
+latest: Pulling from library/hello-world
+1b930d010525: Pull complete
+Digest: sha256:9572f7cdcee8591948c2963463447a53466950b3fc15a247fcad1917ca215a2f
+Status: Downloaded newer image for hello-world:latest
+
 Hello from Docker!
 This message shows that your installation appears to be working correctly.
 
 To generate this message, Docker took the following steps:
  1. The Docker client contacted the Docker daemon.
  2. The Docker daemon pulled the "hello-world" image from the Docker Hub.
+    (amd64)
  3. The Docker daemon created a new container from that image which runs the
     executable that produces the output you are currently reading.
  4. The Docker daemon streamed that output to the Docker client, which sent it
     to your terminal.
+
+To try something more ambitious, you can run an Ubuntu container with:
+ $ docker run -it ubuntu bash
+
+Share images, automate workflows, and more with a free Docker ID:
+ https://hub.docker.com/
+
+For more examples and ideas, visit:
+ https://docs.docker.com/get-started/
 ```
 Run `docker ps` to see if there are any running container instances. It might return an empty result:
 ```
