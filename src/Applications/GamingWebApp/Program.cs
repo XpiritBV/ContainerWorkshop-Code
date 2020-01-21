@@ -23,7 +23,7 @@ namespace GamingWebApp
                 .ConfigureAppConfiguration((hostingContext, config) =>
                 {
                     var env = hostingContext.HostingEnvironment;
-                    if (env.IsDevelopment())
+                    if (env.EnvironmentName == Microsoft.Extensions.Hosting.Environments.Development)
                     {
                         var appAssembly = Assembly.Load(new AssemblyName(env.ApplicationName));
                         if (appAssembly != null)

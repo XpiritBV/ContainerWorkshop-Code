@@ -29,7 +29,7 @@ namespace Leaderboard.WebAPI
     {
         public IConfigurationRoot Configuration { get; }
 
-        public Startup(IConfiguration configuration, IHostingEnvironment env)
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
@@ -37,7 +37,7 @@ namespace Leaderboard.WebAPI
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 // In Kubernetes deployment mount settings file from secret
                 .AddJsonFile($"secrets/appsettings.secrets.json", optional: true);
-            if (env.IsDevelopment())
+            if (env.EnvironmentName == Microsoft.Extensions.Hosting.Environments.Development)
             {
                 builder.AddUserSecrets<Startup>(true);
             }
@@ -50,7 +50,7 @@ namespace Leaderboard.WebAPI
             //}
 
             Configuration = builder.Build();
-            if (!env.IsDevelopment())
+            if (env.EnvironmentName != Microsoft.Extensions.Hosting.Environments.Development)
             {
                 builder.AddAzureKeyVault(
                     Configuration["KeyVaultName"],
@@ -85,9 +85,9 @@ namespace Leaderboard.WebAPI
             ConfigureHealth(services);
             ConfigureSerialization();
 
-            services.AddMvc()
-                .AddXmlSerializerFormatters()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc(options => options.EnableEndpointRouting = false)
+                .AddXmlSerializerFormatters();
+                //.SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
         }
 
         private void ConfigureFeatures(IServiceCollection services)
@@ -128,10 +128,11 @@ namespace Leaderboard.WebAPI
         private void ConfigureTelemetry(IServiceCollection services)
         {
             services.AddSingleton<ITelemetryInitializer, ServiceNameInitializer>();
-            var env = services.BuildServiceProvider().GetRequiredService<IHostingEnvironment>();
+            var env = services.BuildServiceProvider().GetRequiredService<IWebHostEnvironment>();
             services.AddApplicationInsightsTelemetry(options =>
             {
-                options.DeveloperMode = env.IsDevelopment();
+                options.DeveloperMode = env.EnvironmentName == Microsoft.Extensions.Hosting.Environments.Development;
+                    
                 options.InstrumentationKey = Configuration["ApplicationInsights:InstrumentationKey"];
             });
         }
@@ -150,7 +151,7 @@ namespace Leaderboard.WebAPI
 
         private void ConfigureOpenApi(IServiceCollection services)
         {
-            services.AddSwagger();
+            services.AddSwaggerDocument();
         }
 
         private void ConfigureApiOptions(IServiceCollection services)
@@ -189,29 +190,22 @@ namespace Leaderboard.WebAPI
 
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env,
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env,
             ILoggerFactory loggerFactory, LeaderboardContext context)
         {
-            loggerFactory.AddApplicationInsights(app.ApplicationServices, LogLevel.Information);
-            loggerFactory.AddAzureWebAppDiagnostics(
-                new AzureAppServicesDiagnosticsSettings
-                {
-                    OutputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss zzz} [{Level}] {RequestId}-{SourceContext}: {Message}{NewLine}{Exception}"
-                }
-            );
-            loggerFactory.AddConsole();
-            loggerFactory.AddDebug();
 
-            if (env.IsDevelopment())
+            LoggerFactory.Create(builder => builder.AddConsole());
+            LoggerFactory.Create(builder => builder.AddDebug());
+            if (env.EnvironmentName == Microsoft.Extensions.Hosting.Environments.Development)
             {
+                
                 DbInitializer.Initialize(context).Wait();
                 app.UseDeveloperExceptionPage();
             }
 
             app.UseOpenApi();
             app.UseSwaggerUi3();
-
-            app.UseMvcWithDefaultRoute();
+            app.UseMvc();
         }
     }
 }
