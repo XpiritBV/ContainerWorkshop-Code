@@ -18,10 +18,7 @@ git checkout start
 
 > ##### Important
 
-> Make sure you have switched to the `start` branch to use the right .NET solution. If you are still on the `master` branch, you will use the completed solution. You can switch to the start branch using the following commandline in the root of the solution directory:
-```
-git checkout start
-```
+> Make sure you have switched to the `start` branch to use the right .NET solution. If you are still on the `master` branch, you will use the completed solution. 
 
 > Make sure you have configured 'Docker Desktop' to run Linux containers.
 > If your VS2017 debugger won't start and attach, reset 'Docker Desktop' to its factory defaults and recreate network shares by using the settings screen.
