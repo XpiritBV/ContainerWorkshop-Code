@@ -23,11 +23,11 @@ C:\Program Files\Docker\Docker\Docker Desktop.exe
 
 After starting the Docker tooling you should see the following dialog:
 
-<img src="images/docker desktop running.png" height="100"/>
+<img src="images/dockerdesktoprunning.png" height="100"/>
 
 When you click the whale icon in the system tray and select: about docker desktop, you should see the following window:
 
-<img src="images/docker desktop.png" height="300">
+<img src="images/dockerdesktop.png" height="300">
 
 Start a Developer Command Prompt and run the following commands:
 
