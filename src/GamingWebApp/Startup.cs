@@ -18,12 +18,12 @@ namespace GamingWebApp
 {
     public class Startup
     {
+        public IConfiguration Configuration { get; }
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
-
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -33,6 +33,8 @@ namespace GamingWebApp
             // Centrally stored policies
             var timeoutPolicy = Policy.TimeoutAsync<HttpResponseMessage>(TimeSpan.FromMilliseconds(1500));
             policyRegistry.Add("timeout", timeoutPolicy);
+
+            services.Configure<LeaderboardApiOptions>(Configuration.GetSection(nameof(LeaderboardApiOptions)));
 
             ConfigureTypedClients(services);
             ConfigureSecurity(services);

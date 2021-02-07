@@ -12,6 +12,3 @@ services:
     build:
       context: .
       dockerfile: src/GamingWebApp/Dockerfile
-
-  sql.data:
-    image: mcr.microsoft.com/mssql/server:2019-latest

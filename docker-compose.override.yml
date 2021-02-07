@@ -9,6 +9,8 @@ services:
     ports:
       - "4972:80"
       - "44369:443"
+    depends_on:
+      - sql.data
     volumes:
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
     networks:
@@ -31,6 +33,7 @@ services:
       - frontend
 
   sql.data:
+    image: mcr.microsoft.com/mssql/server:2019-latest
     environment:
       - SA_PASSWORD=Pass@word
       - MSSQL_PID=Developer

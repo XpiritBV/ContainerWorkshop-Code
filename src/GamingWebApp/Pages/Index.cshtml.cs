@@ -4,7 +4,9 @@ using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Polly.Timeout;
+using Refit;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,13 +19,15 @@ namespace GamingWebApp.Pages
     {
         private readonly ILogger<IndexModel> logger;
         private readonly TelemetryClient telemetryClient;
+        private readonly IOptionsSnapshot<LeaderboardApiOptions> options;
         private readonly ILeaderboardClient proxy;
 
-        public IndexModel(TelemetryClient telemetryClient,
+        public IndexModel(TelemetryClient telemetryClient, IOptionsSnapshot<LeaderboardApiOptions> options,
             ILeaderboardClient proxy, ILoggerFactory loggerFactory)
         {
             this.logger = loggerFactory.CreateLogger<IndexModel>();
             this.telemetryClient = telemetryClient;
+            this.options = options;
             this.proxy = proxy;
         }
 
@@ -31,6 +35,9 @@ namespace GamingWebApp.Pages
 
         public async Task OnGetAsync()
         {
+            // Create a proxy to web API 
+            ILeaderboardClient client = RestService.For<ILeaderboardClient>(options.Value.BaseUrl);
+
             Scores = new List<HighScore>();
             try
             {
@@ -38,6 +45,7 @@ namespace GamingWebApp.Pages
                 {
                     try
                     {
+                        // Using injected typed HTTP client instead of locally created proxy
                         Scores = await proxy.GetHighScores();
                     }
                     catch
