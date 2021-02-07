@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30907.101
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LeaderboardWebAPI", "src\LeaderboardWebAPI\LeaderboardWebAPI.csproj", "{7F7BED6A-4088-47F9-90CF-B1F1CC680580}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GamingWebApp", "src\GamingWebApp\GamingWebApp.csproj", "{2A3DB97A-CD0D-4184-8B3E-71A2B6D1A7C2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7F7BED6A-4088-47F9-90CF-B1F1CC680580}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F7BED6A-4088-47F9-90CF-B1F1CC680580}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F7BED6A-4088-47F9-90CF-B1F1CC680580}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F7BED6A-4088-47F9-90CF-B1F1CC680580}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A3DB97A-CD0D-4184-8B3E-71A2B6D1A7C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A3DB97A-CD0D-4184-8B3E-71A2B6D1A7C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A3DB97A-CD0D-4184-8B3E-71A2B6D1A7C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A3DB97A-CD0D-4184-8B3E-71A2B6D1A7C2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8183892E-EDA5-4B30-9F34-9169A05F6BCA}
+	EndGlobalSection
+EndGlobal
