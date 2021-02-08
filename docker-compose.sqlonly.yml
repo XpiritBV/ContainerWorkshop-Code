@@ -1,0 +1,22 @@
+version: '3.4'
+
+services:
+
+  sql.data:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      - SA_PASSWORD=Pass@word
+      - MSSQL_PID=Developer
+      - ACCEPT_EULA=Y
+    ports:
+      - "5433:1433"
+    networks:
+      backend:
+        aliases: 
+          - sql.retrogaming.internal
+
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge
