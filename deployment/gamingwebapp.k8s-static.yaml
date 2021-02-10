@@ -32,7 +32,6 @@ spec:
     app: sqldata
   ports:
     - port: 1433
-      targetPort: 1433
       protocol: TCP
 ---
 apiVersion: v1
@@ -120,7 +119,7 @@ spec:
         - name: ASPNETCORE_URLS
           value: http://0.0.0.0:80
         - name: ConnectionStrings__LeaderboardContext
-          value: Server=svc-sqldata,1433;Initial Catalog=Leaderboard;Persist Security Info=False;User ID=retrogamer;Password=abc123!@;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;
+          value: Server=svc-sqldata,1433;Database=Leaderboard;User Id=sa;Password=Pass@word;Trusted_Connection=False
         ports:
         - containerPort: 80
         - containerPort: 443
