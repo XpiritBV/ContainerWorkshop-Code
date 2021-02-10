@@ -6,6 +6,7 @@ metadata:
     version: dev
     product: RetroGaming
 spec:
+  type: LoadBalancer
   selector:
     app: gamingwebapp
   ports:
@@ -31,6 +32,7 @@ spec:
     app: sqldata
   ports:
     - port: 1433
+      targetPort: 1433
       protocol: TCP
 ---
 apiVersion: v1
@@ -53,11 +55,14 @@ spec:
     protocol: TCP
     name: https
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: dep-gamingwebapp
 spec:
+  selector:
+    matchLabels:
+      app : gamingwebapp
   replicas: 1
   revisionHistoryLimit: 0
   strategy:
@@ -73,7 +78,7 @@ spec:
         image: __containerregistry__/gamingwebapp:demo
         env:
         - name: ASPNETCORE_ENVIRONMENT
-          value: Production
+          value: Development
         - name: ASPNETCORE_URLS
           value: http://0.0.0.0:80
         - name: LeaderboardApiOptions__BaseUrl
@@ -87,11 +92,14 @@ spec:
       imagePullSecrets:
         - name: pullkey
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: dep-leaderboardwebapi
 spec:
+  selector:
+    matchLabels:
+      app : leaderboardwebapi
   replicas: 1
   revisionHistoryLimit: 0
   strategy:
@@ -112,7 +120,7 @@ spec:
         - name: ASPNETCORE_URLS
           value: http://0.0.0.0:80
         - name: ConnectionStrings__LeaderboardContext
-          value: Server=svc-sqldata;Database=Leaderboard;User Id=sa;Password=Pass@word;Trusted_Connection=False
+          value: Server=svc-sqldata,1433;Initial Catalog=Leaderboard;Persist Security Info=False;User ID=retrogamer;Password=abc123!@;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;
         ports:
         - containerPort: 80
         - containerPort: 443
@@ -122,23 +130,14 @@ spec:
       imagePullSecrets:
         - name: pullkey
 ---
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: mssql-data-volume
-spec:
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: default
-  resources:
-    requests:
-      storage: 5Gi
----
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: dep-sqldata
 spec:
+  selector:
+    matchLabels:
+      app : sqldata
   replicas: 1
   template:
     metadata:
@@ -160,15 +159,8 @@ spec:
         - name: ACCEPT_EULA
           value: "Y"
         - name: MSSQL_MEMORY_LIMIT_MB
-          value: "512"
+          value: "2048"
         ports:
         - containerPort: 1433
-        volumeMounts:
-          - mountPath: "/var/opt/mssql/data"
-            name: data-volume
       nodeSelector:
         beta.kubernetes.io/os: linux
-      volumes:
-        - name: data-volume
-          persistentVolumeClaim:
-            claimName: mssql-data-volume
