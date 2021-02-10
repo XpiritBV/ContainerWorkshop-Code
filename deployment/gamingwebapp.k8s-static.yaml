@@ -146,10 +146,6 @@ spec:
       containers:
       - name: sqldata
         image: mcr.microsoft.com/mssql/server:2019-latest
-        resources:
-          limits:
-            cpu: 100m
-            memory: 600Mi
         env:
         - name: SA_PASSWORD
           value: Pass@word
@@ -157,8 +153,6 @@ spec:
           value: Developer
         - name: ACCEPT_EULA
           value: "Y"
-        - name: MSSQL_MEMORY_LIMIT_MB
-          value: "2048"
         ports:
         - containerPort: 1433
       nodeSelector:
