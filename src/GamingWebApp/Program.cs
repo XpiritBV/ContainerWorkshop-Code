@@ -18,6 +18,14 @@ namespace GamingWebApp
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .ConfigureLogging((context, builder) =>
+                {
+                    builder.AddApplicationInsights(options =>
+                    {
+                        options.IncludeScopes = true;
+                        options.TrackExceptionsAsExceptionTelemetry = true;
+                    });
+                })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();

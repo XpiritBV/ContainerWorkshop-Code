@@ -108,6 +108,10 @@ spec:
       labels:
         app: leaderboardwebapi
     spec:
+      volumes:
+      - name: secretsettings
+        secret:
+          secretName: secret-appsettings
       containers:
       - name: leaderboardwebapi
         terminationMessagePath: "/tmp/leaderboardwebapi-log"
@@ -118,7 +122,7 @@ spec:
           value: Development
         - name: ASPNETCORE_URLS
           value: http://0.0.0.0:80
-        - name: ConnectionStrings__LeaderboardContext
+        - name: ConnectionStrings__LeaderboardContext2
           value: Server=svc-sqldata,1433;Database=Leaderboard;User Id=sa;Password=Pass@word;Trusted_Connection=False
         ports:
         - containerPort: 80
@@ -126,6 +130,10 @@ spec:
         resources:
           limits:
             cpu: "0.10"
+        volumeMounts:
+        - name: secretsettings
+          mountPath: /app/secrets
+          readOnly: true
       imagePullSecrets:
         - name: pullkey
 ---

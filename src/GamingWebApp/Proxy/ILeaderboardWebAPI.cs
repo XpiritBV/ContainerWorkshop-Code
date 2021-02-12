@@ -10,7 +10,7 @@ namespace GamingWebApp.Proxy
     public interface ILeaderboardClient
     {
         [Get("/api/leaderboard")]
-        Task<IEnumerable<HighScore>> GetHighScores();
+        Task<IEnumerable<HighScore>> GetHighScores(int limit = 10);
     }
 
     public class HighScore

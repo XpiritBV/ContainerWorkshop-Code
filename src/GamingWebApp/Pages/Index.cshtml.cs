@@ -46,7 +46,10 @@ namespace GamingWebApp.Pages
                     try
                     {
                         // Using injected typed HTTP client instead of locally created proxy
-                        Scores = await proxy.GetHighScores();
+                        int limit;
+                        Scores = await proxy.GetHighScores(
+                            Int32.TryParse(Request.Query["limit"], out limit) ? limit : 10
+                        ).ConfigureAwait(false);
                     }
                     catch
                     {
