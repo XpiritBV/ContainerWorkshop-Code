@@ -34,6 +34,8 @@ namespace GamingWebApp
             var timeoutPolicy = Policy.TimeoutAsync<HttpResponseMessage>(TimeSpan.FromMilliseconds(1500));
             policyRegistry.Add("timeout", timeoutPolicy);
 
+            services.Configure<LeaderboardApiOptions>(Configuration.GetSection(nameof(LeaderboardApiOptions)));
+
             ConfigureTypedClients(services);
             ConfigureSecurity(services);
             ConfigureTelemetry(services);
