@@ -122,7 +122,7 @@ spec:
           value: Development
         - name: ASPNETCORE_URLS
           value: http://0.0.0.0:80
-        - name: ConnectionStrings__LeaderboardContext2
+        - name: ConnectionStrings__LeaderboardContext
           value: Server=svc-sqldata,1433;Database=Leaderboard;User Id=sa;Password=Pass@word;Trusted_Connection=False
         ports:
         - containerPort: 80
