@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
@@ -17,6 +18,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace LeaderboardWebAPI
@@ -70,11 +72,19 @@ namespace LeaderboardWebAPI
 
         private void ConfigureHealth(IServiceCollection services)
         {
-            services.AddHealthChecks();
+            services.Configure<HealthCheckPublisherOptions>(options =>
+            {
+                options.Delay = TimeSpan.FromSeconds(2);
+                options.Timeout = TimeSpan.FromSeconds(10);
+            });
+
+            services.AddHealthChecks()
+                .AddApplicationInsightsPublisher(Configuration["ApplicationInsights:InstrumentationKey"]);                
 
             // Uncomment next two lines for self-host healthchecks UI
             //services.AddHealthChecksUI()
-            //    .AddSqliteStorage($"Data Source=sqlite.db"); ;
+            //    .AddSqliteStorage($"Data Source=sqlite.db");
+
         }
 
         private void ConfigureSecurity(IServiceCollection services)
@@ -93,6 +103,7 @@ namespace LeaderboardWebAPI
         {
             services.AddSingleton<ITelemetryInitializer, ServiceNameInitializer>();
             services.AddApplicationInsightsTelemetry(Configuration);
+            services.AddApplicationInsightsKubernetesEnricher();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -112,6 +123,8 @@ namespace LeaderboardWebAPI
             //app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthorization();
+            app.UseHealthChecksPrometheusExporter("/healthmetrics", options => options.ResultStatusCodes[HealthStatus.Unhealthy] = (int)HttpStatusCode.OK);
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHealthChecks("/ping", new HealthCheckOptions() { Predicate = _ => false });
