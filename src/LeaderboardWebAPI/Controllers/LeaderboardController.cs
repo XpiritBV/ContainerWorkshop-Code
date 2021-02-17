@@ -23,12 +23,9 @@ namespace LeaderboardWebAPI.Controllers
     {
         public LeaderboardContext context { get; }
 
-        private readonly ILogger<LeaderboardController> logger;
-
-        public LeaderboardController(LeaderboardContext context, ILogger<LeaderboardController> logger)
+        public LeaderboardController(LeaderboardContext context)
         {
             this.context = context;
-            this.logger = logger;
         }
 
         // GET api/leaderboard
@@ -39,7 +36,7 @@ namespace LeaderboardWebAPI.Controllers
         /// <response code="200">The list was successfully retrieved.</response>
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<HighScore>), 200)]
-        public async Task<ActionResult<IEnumerable<HighScore>>> Get()
+        public async Task<ActionResult<IEnumerable<HighScore>>> Get(int limit = 10)
         {
             var scores = context.Scores
                 .Select(score => new HighScore()
@@ -47,7 +44,7 @@ namespace LeaderboardWebAPI.Controllers
                     Game = score.Game,
                     Points = score.Points,
                     Nickname = score.Gamer.Nickname
-                });
+                }).Take(limit);
 
             return Ok(await scores.ToListAsync().ConfigureAwait(false));
         }

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace GamingWebApp
+namespace LeaderboardWebAPI
 {
     public class ServiceNameInitializer : ITelemetryInitializer
     {
@@ -13,7 +13,7 @@ namespace GamingWebApp
         public void Initialize(ITelemetry telemetry)
         {
             if (telemetry == null) throw new ArgumentNullException(nameof(telemetry));
-            telemetry.Context.Cloud.RoleName = "Gaming Web Application";
+            telemetry.Context.Cloud.RoleName = "Leaderboard Web API";
         }
     }
 }

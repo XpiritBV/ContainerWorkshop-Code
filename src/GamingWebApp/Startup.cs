@@ -46,10 +46,7 @@ namespace GamingWebApp
         private void ConfigureTelemetry(IServiceCollection services)
         {
             services.AddSingleton<ITelemetryInitializer, ServiceNameInitializer>();
-            services.AddApplicationInsightsTelemetry(options =>
-            {
-                options.DeveloperMode = true;
-            });
+            services.AddApplicationInsightsTelemetry(Configuration);
         }
 
         private void ConfigureTypedClients(IServiceCollection services)

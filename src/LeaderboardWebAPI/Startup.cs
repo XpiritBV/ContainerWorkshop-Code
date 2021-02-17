@@ -1,4 +1,5 @@
 using LeaderboardWebAPI.Infrastructure;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -44,6 +45,7 @@ namespace LeaderboardWebAPI
             });
 
             ConfigureSecurity(services);
+            ConfigureTelemetry(services);
 
             services
                 .AddControllers(options => {
@@ -72,6 +74,12 @@ namespace LeaderboardWebAPI
                    .AllowAnyHeader()
                 );
             });
+        }
+
+        private void ConfigureTelemetry(IServiceCollection services)
+        {
+            services.AddSingleton<ITelemetryInitializer, ServiceNameInitializer>();
+            services.AddApplicationInsightsTelemetry(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
