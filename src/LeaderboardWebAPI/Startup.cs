@@ -1,6 +1,8 @@
+using HealthChecks.UI.Client;
 using LeaderboardWebAPI.Infrastructure;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
@@ -46,6 +48,7 @@ namespace LeaderboardWebAPI
 
             ConfigureSecurity(services);
             ConfigureTelemetry(services);
+            ConfigureHealth(services);
 
             services
                 .AddControllers(options => {
@@ -63,6 +66,15 @@ namespace LeaderboardWebAPI
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "LeaderboardWebAPI", Version = "v1" });
             });
+        }
+
+        private void ConfigureHealth(IServiceCollection services)
+        {
+            services.AddHealthChecks();
+
+            // Uncomment next two lines for self-host healthchecks UI
+            //services.AddHealthChecksUI()
+            //    .AddSqliteStorage($"Data Source=sqlite.db"); ;
         }
 
         private void ConfigureSecurity(IServiceCollection services)
@@ -94,7 +106,7 @@ namespace LeaderboardWebAPI
                 app.UseStatusCodePages();
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "LeaderboardWebAPI v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "LeaderboardWebAPI v1"));                
             }
 
             //app.UseHttpsRedirection();
@@ -102,6 +114,26 @@ namespace LeaderboardWebAPI
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHealthChecks("/ping", new HealthCheckOptions() { Predicate = _ => false });
+                endpoints.MapHealthChecks("/health/ready",
+                    new HealthCheckOptions()
+                    {
+                        Predicate = reg => reg.Tags.Contains("ready"),
+                        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                    })
+                    .RequireHost($"*:{Configuration["ManagementPort"]}");
+
+                endpoints.MapHealthChecks("/health/lively",
+                    new HealthCheckOptions()
+                    {
+                        Predicate = _ => true,
+                        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                    })
+                .RequireHost($"*:{Configuration["ManagementPort"]}");
+
+                // Uncomment next two lines for self-host healthchecks UI
+                //endpoints.MapHealthChecksUI();
+
                 endpoints.MapControllers();
             });
         }

@@ -35,9 +35,6 @@ namespace GamingWebApp.Pages
 
         public async Task OnGetAsync()
         {
-            // Create a proxy to web API 
-            ILeaderboardClient client = RestService.For<ILeaderboardClient>(options.Value.BaseUrl);
-
             Scores = new List<HighScore>();
             try
             {

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace LeaderboardWebAPI
@@ -47,7 +48,8 @@ namespace LeaderboardWebAPI
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    Assembly startupAssembly = typeof(Startup).GetTypeInfo().Assembly;
+                    webBuilder.UseStartup(startupAssembly.GetName().Name);
                 });
     }
 }
