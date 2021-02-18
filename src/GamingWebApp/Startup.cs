@@ -39,7 +39,7 @@ namespace GamingWebApp
             ConfigureTypedClients(services);
             ConfigureSecurity(services);
             ConfigureTelemetry(services);
-
+            
             services.AddRazorPages();
         }
 

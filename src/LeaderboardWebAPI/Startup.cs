@@ -1,6 +1,7 @@
 using LeaderboardWebAPI.Infrastructure;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
@@ -46,6 +47,7 @@ namespace LeaderboardWebAPI
 
             ConfigureSecurity(services);
             ConfigureTelemetry(services);
+            ConfigureHealth(services);
 
             services
                 .AddControllers(options => {
@@ -76,6 +78,15 @@ namespace LeaderboardWebAPI
             });
         }
 
+        private void ConfigureHealth(IServiceCollection services)
+        {
+            services.AddHealthChecks();
+
+            // Uncomment next two lines for self-host healthchecks UI
+            //services.AddHealthChecksUI()
+            //    .AddSqliteStorage($"Data Source=sqlite.db");
+        }
+
         private void ConfigureTelemetry(IServiceCollection services)
         {
             services.AddSingleton<ITelemetryInitializer, ServiceNameInitializer>();
@@ -101,6 +112,10 @@ namespace LeaderboardWebAPI
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
+                // Uncomment next two lines for self-host healthchecks UI
+                //endpoints.MapHealthChecksUI();
+
+                endpoints.MapHealthChecks("/ping", new HealthCheckOptions() { Predicate = _ => false });
                 endpoints.MapControllers();
             });
         }
