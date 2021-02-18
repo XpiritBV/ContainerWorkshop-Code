@@ -22,21 +22,6 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: svc-sqldata
-  labels:
-    version: dev
-    product: RetroGaming
-    app: sqldata
-spec:
-  selector:
-    app: sqldata
-  ports:
-    - port: 1433
-      protocol: TCP
----
-apiVersion: v1
-kind: Service
-metadata:
   name: svc-leaderboardwebapi
   labels:
     version: dev
@@ -74,14 +59,18 @@ spec:
       containers:
       - name: gamingwebapp
         terminationMessagePath: "/tmp/gamingwebapp-log"
-        image: __containerregistry__/gamingwebapp:demo
+        image: __containerregistry__/gamingwebapp:latest
         env:
         - name: ASPNETCORE_ENVIRONMENT
           value: Development
         - name: ASPNETCORE_URLS
-          value: http://0.0.0.0:80
+          value: http://+:80
         - name: LeaderboardApiOptions__BaseUrl
           value: http://svc-leaderboardwebapi
+        - name: ApplicationInsights__InstrumentationKey
+          value: <your-instrumentation-key>
+        - name: ApplicationInsights__DeveloperMode
+          value: true
         ports:
         - containerPort: 80
         - containerPort: 443
@@ -115,13 +104,13 @@ spec:
       containers:
       - name: leaderboardwebapi
         terminationMessagePath: "/tmp/leaderboardwebapi-log"
-        image: __containerregistry__/leaderboardwebapi:demo
+        image: __containerregistry__/leaderboardwebapi:latest
         imagePullPolicy: Always
         readinessProbe:
           httpGet:
             path: /health/ready
             port: 8080
-          initialDelaySeconds: 5
+          initialDelaySeconds: 90
           periodSeconds: 10
           timeoutSeconds: 20
           failureThreshold: 5
@@ -129,17 +118,27 @@ spec:
           httpGet:
             path: /health/lively
             port: 8080
-          initialDelaySeconds: 60
+          initialDelaySeconds: 90
           periodSeconds: 10
-          timeoutSeconds: 10
+          timeoutSeconds: 20
           failureThreshold: 3
         env:
         - name: ASPNETCORE_ENVIRONMENT
           value: Development
+        - name: Logging__LogLevel__Default
+          value: Debug
+        - name: Logging__LogLevel__Microsoft
+          value: Debug
+        - name: KeyVaultName
+          value: <your-keyvault-url>
+        - name: ASPNETCORE_MANAGEMENTPORT
+          value: "8080"
         - name: ASPNETCORE_URLS
-          value: http://0.0.0.0:80;http://0.0.0.0:8080
-        - name: ConnectionStrings__LeaderboardContext
-          value: Server=svc-sqldata,1433;Database=Leaderboard;User Id=sa;Password=Pass@word;Trusted_Connection=False
+          value: http://+:80;http://+:8080
+        - name: ApplicationInsights__InstrumentationKey
+          value: <your-instrumentationkey>
+        - name: ApplicationInsights__DeveloperMode
+          value: true
         ports:
         - containerPort: 80
         - containerPort: 8080
@@ -153,32 +152,3 @@ spec:
           readOnly: true
       imagePullSecrets:
         - name: pullkey
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: dep-sqldata
-spec:
-  selector:
-    matchLabels:
-      app : sqldata
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        app: sqldata
-    spec:
-      containers:
-      - name: sqldata
-        image: mcr.microsoft.com/mssql/server:2019-latest
-        env:
-        - name: SA_PASSWORD
-          value: Pass@word
-        - name: MSSQL_PID
-          value: Developer
-        - name: ACCEPT_EULA
-          value: "Y"
-        ports:
-        - containerPort: 1433
-      nodeSelector:
-        beta.kubernetes.io/os: linux

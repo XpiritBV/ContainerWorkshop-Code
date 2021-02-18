@@ -24,19 +24,22 @@ namespace LeaderboardWebAPI
             Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration((context, config) =>
                 {
-                    //config.AddJsonFile("secrets/appsettings.secrets.json", optional: true);
+                    config.AddJsonFile("secrets/appsettings.secrets.json", optional: true);
                     var hostConfig = config.Build();
 
-                    var secretClient = new SecretClient(
-                        new Uri(hostConfig["KeyVaultName"]),
-                        new ClientSecretCredential(
-                            hostConfig["KeyVaultTenantID"],
-                            hostConfig["KeyVaultClientID"],
-                            hostConfig["KeyVaultClientSecret"])
-                    // For managed identities use:
-                    //   new DefaultAzureCredential()
-                    );
-                    config.AddAzureKeyVault(secretClient, new KeyVaultSecretManager());
+                    if (!String.IsNullOrEmpty(hostConfig["KeyVaultName"]))
+                    {
+                        var secretClient = new SecretClient(
+                            new Uri(hostConfig["KeyVaultName"]),
+                            new ClientSecretCredential(
+                                hostConfig["KeyVaultTenantID"],
+                                hostConfig["KeyVaultClientID"],
+                                hostConfig["KeyVaultClientSecret"])
+                        // For managed identities use:
+                        //   new DefaultAzureCredential()
+                        );
+                        config.AddAzureKeyVault(secretClient, new KeyVaultSecretManager());
+                    }
                 })
                 .ConfigureLogging((context, builder) =>
                 {
