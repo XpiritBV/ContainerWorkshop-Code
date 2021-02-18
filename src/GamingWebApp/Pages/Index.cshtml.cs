@@ -19,11 +19,13 @@ namespace GamingWebApp.Pages
     public class IndexModel : PageModel
     {
         private readonly ILogger<IndexModel> logger;
+        private readonly ILeaderboardClient client;
         private readonly IOptionsSnapshot<LeaderboardApiOptions> options;
 
-        public IndexModel(IOptionsSnapshot<LeaderboardApiOptions> options, ILoggerFactory loggerFactory)
+        public IndexModel(ILeaderboardClient client, IOptionsSnapshot<LeaderboardApiOptions> options, ILoggerFactory loggerFactory)
         {
             this.logger = loggerFactory.CreateLogger<IndexModel>();
+            this.client = client;
             this.options = options;
         }
 
@@ -31,11 +33,12 @@ namespace GamingWebApp.Pages
 
         public async Task OnGetAsync()
         {
-            ILeaderboardClient proxy = RestService.For<ILeaderboardClient>(options.Value.BaseUrl);
             Scores = new List<HighScore>();
             try
             {
-                Scores = await proxy.GetHighScores();
+                int limit;
+                Scores = await client.GetHighScores(
+                    Int32.TryParse(Request.Query["limit"], out limit) ? limit : 10);
             }
             catch (HttpRequestException ex)
             {

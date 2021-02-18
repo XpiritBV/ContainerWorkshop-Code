@@ -23,9 +23,12 @@ namespace LeaderboardWebAPI.Controllers
     {
         public LeaderboardContext context { get; }
 
-        public LeaderboardController(LeaderboardContext context)
+        private readonly ILogger<LeaderboardController> logger;
+
+        public LeaderboardController(LeaderboardContext context, ILoggerFactory loggerFactory)
         {
             this.context = context;
+            this.logger = loggerFactory.CreateLogger<LeaderboardController>();
         }
 
         // GET api/leaderboard
@@ -36,8 +39,16 @@ namespace LeaderboardWebAPI.Controllers
         /// <response code="200">The list was successfully retrieved.</response>
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<HighScore>), 200)]
-        public async Task<ActionResult<IEnumerable<HighScore>>> Get(int limit = 10)
+        public async Task<ActionResult<IEnumerable<HighScore>>> Get(int limit = 0)
         {
+            // This is a demo bug, supposedly "hard" to find
+            //do
+            //{
+            //   limit--;
+            //}
+            //while (limit != 0);
+
+            logger.LogWarning("Retrieving score list with a limit of {SearchLimit}.", limit);
             var scores = context.Scores
                 .Select(score => new HighScore()
                 {

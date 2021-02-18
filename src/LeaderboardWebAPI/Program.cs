@@ -21,6 +21,14 @@ namespace LeaderboardWebAPI
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .ConfigureLogging((context, builder) =>
+                {
+                    builder.AddApplicationInsights(options =>
+                    {
+                        options.IncludeScopes = true;
+                        options.TrackExceptionsAsExceptionTelemetry = true;
+                    });
+                })
                 .ConfigureAppConfiguration((context, config) =>
                 {
                     config.AddJsonFile("secrets/appsettings.secrets.json", optional: true);
