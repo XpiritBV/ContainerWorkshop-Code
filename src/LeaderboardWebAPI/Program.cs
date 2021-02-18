@@ -29,7 +29,10 @@ namespace LeaderboardWebAPI
                     {
                         var secretClient = new SecretClient(
                             new Uri(hostConfig["KeyVaultName"]),
-                            new DefaultAzureCredential()
+                            new ClientSecretCredential(
+                                hostConfig["KeyVaultTenantID"],
+                                hostConfig["KeyVaultClientID"],
+                                hostConfig["KeyVaultClientSecret"])
                         );
                         config.AddAzureKeyVault(secretClient, new KeyVaultSecretManager());
                     }
