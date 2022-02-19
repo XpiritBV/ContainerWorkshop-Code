@@ -112,26 +112,24 @@ namespace LeaderboardWebAPI
             //app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthorization();
-            app.UseEndpoints(endpoints =>
-            {
-                // Uncomment the next lines for healthchecks:
+            app.UseEndpoints(endpoints => {
+ 
+                endpoints.MapHealthChecks("/ping", new HealthCheckOptions() { Predicate = _ => false });
+                endpoints.MapHealthChecks("/health/ready",
+                    new HealthCheckOptions()
+                    {
+                        Predicate = reg => reg.Tags.Contains("ready"),
+                        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                    })
+                    .RequireHost($"*:{Configuration["ManagementPort"]}");
 
-                //endpoints.MapHealthChecks("/ping", new HealthCheckOptions() { Predicate = _ => false });
-                //endpoints.MapHealthChecks("/health/ready",
-                //    new HealthCheckOptions()
-                //    {
-                //        Predicate = reg => reg.Tags.Contains("ready"),
-                //        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-                //    })
-                //    .RequireHost($"*:{Configuration["ManagementPort"]}");
-
-                //endpoints.MapHealthChecks("/health/lively",
-                //    new HealthCheckOptions()
-                //    {
-                //        Predicate = _ => true,
-                //        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-                //    })
-                //.RequireHost($"*:{Configuration["ManagementPort"]}");
+                endpoints.MapHealthChecks("/health/lively",
+                    new HealthCheckOptions()
+                    {
+                        Predicate = _ => true,
+                        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                    })
+                .RequireHost($"*:{Configuration["ManagementPort"]}");
 
                 // Uncomment next two lines for self-host healthchecks UI
                 //endpoints.MapHealthChecksUI();

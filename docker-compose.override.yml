@@ -53,6 +53,8 @@ services:
       - HealthChecksUI:HealthChecks:0:Uri=http://leaderboardwebapi:8080/health/ready
       - HealthChecksUI:HealthChecks:1:Name=Liveliness checks
       - HealthChecksUI:HealthChecks:1:Uri=http://leaderboardwebapi:8080/health/lively
+    depends_on:
+      - leaderboardwebapi
     ports:
       - 5000:80
     networks:
