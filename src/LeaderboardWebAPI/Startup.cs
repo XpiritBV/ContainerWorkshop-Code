@@ -106,7 +106,7 @@ namespace LeaderboardWebAPI
                 app.UseStatusCodePages();
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "LeaderboardWebAPI v1"));                
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "LeaderboardWebAPI v1"));
             }
 
             //app.UseHttpsRedirection();
@@ -114,22 +114,24 @@ namespace LeaderboardWebAPI
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapHealthChecks("/ping", new HealthCheckOptions() { Predicate = _ => false });
-                endpoints.MapHealthChecks("/health/ready",
-                    new HealthCheckOptions()
-                    {
-                        Predicate = reg => reg.Tags.Contains("ready"),
-                        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-                    })
-                    .RequireHost($"*:{Configuration["ManagementPort"]}");
+                // Uncomment the next lines for healthchecks:
 
-                endpoints.MapHealthChecks("/health/lively",
-                    new HealthCheckOptions()
-                    {
-                        Predicate = _ => true,
-                        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-                    })
-                .RequireHost($"*:{Configuration["ManagementPort"]}");
+                //endpoints.MapHealthChecks("/ping", new HealthCheckOptions() { Predicate = _ => false });
+                //endpoints.MapHealthChecks("/health/ready",
+                //    new HealthCheckOptions()
+                //    {
+                //        Predicate = reg => reg.Tags.Contains("ready"),
+                //        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                //    })
+                //    .RequireHost($"*:{Configuration["ManagementPort"]}");
+
+                //endpoints.MapHealthChecks("/health/lively",
+                //    new HealthCheckOptions()
+                //    {
+                //        Predicate = _ => true,
+                //        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                //    })
+                //.RequireHost($"*:{Configuration["ManagementPort"]}");
 
                 // Uncomment next two lines for self-host healthchecks UI
                 //endpoints.MapHealthChecksUI();
