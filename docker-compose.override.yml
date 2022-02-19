@@ -1,0 +1,48 @@
+version: '3.4'
+
+services:
+  leaderboardwebapi:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+#      - ConnectionStrings__LeaderboardContext=Server=sql.retrogaming.internal;Database=Leaderboard;User Id=sa;Password=Pass@word;Trusted_Connection=False
+    ports:
+      - "4972:80"
+      - "44369:443"
+    volumes:
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+    networks:
+      - frontend
+      - backend
+
+  gamingwebapp:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - LeaderboardApiOptions__BaseUrl=http://leaderboardwebapi
+    ports:
+      - "5618:80"
+      - "44325:443"
+    volumes:
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+    networks:
+      - frontend
+
+  sql.data:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      - SA_PASSWORD=Pass@word
+      - MSSQL_PID=Developer
+      - ACCEPT_EULA=Y
+    ports:
+      - "1433"
+    networks:
+      backend:
+        aliases: 
+          - sql.retrogaming.internal
+
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge
