@@ -102,7 +102,7 @@ namespace LeaderboardWebAPI
 
             if (env.IsDevelopment())
             {
-                DbInitializer.Initialize(context).Wait();
+                DbInitializer.Initialize(context).GetAwaiter().GetResult();
                 app.UseStatusCodePages();
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
